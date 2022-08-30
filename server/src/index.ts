@@ -4,6 +4,8 @@ import { watchClientBuild } from './build-client';
 import { DB_FILE_PATH, PORT, STATIC_ROOT_FOLDER_PATH } from './constants';
 import Db from './db';
 import { seedDb } from './seed';
+import { createApolloServer } from './apollo-server';
+import { createServer } from 'http';
 
 const app = express();
 
@@ -20,6 +22,12 @@ async function main() {
   await seedDb(db);
 
   app.use('/static', express.static(STATIC_ROOT_FOLDER_PATH));
+  const httpServer = createServer(app)
+  const apolloServer = await createApolloServer(
+    db,
+    httpServer,
+    app
+  )
 
   await new Promise<void>((resolve) =>
     app.listen(PORT, () => {
