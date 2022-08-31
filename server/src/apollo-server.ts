@@ -2,7 +2,6 @@ import { ApolloServerPluginDrainHttpServer } from 'apollo-server-core';
 import {
   ApolloServer,
   ExpressContext,
-  gql
 } from 'apollo-server-express';
 import * as express from 'express';
 import { Server } from 'http';
@@ -42,8 +41,11 @@ export async function createApolloServer(
   }
 
   const server = new ApolloServer({
-    typeDefs,
-    resolvers,
+
+    schema: addResolversToSchema({
+      schema: SCHEMA,
+      resolvers,
+    }),
     context: () => ({ db }),
     plugins: [
       ApolloServerPluginDrainHttpServer({ httpServer })
