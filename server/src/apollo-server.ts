@@ -7,33 +7,20 @@ import {
 import * as express from 'express';
 import { Server } from 'http';
 import Db from './db';
+import { GraphQLFileLoader } from "@graphql-tools/graphql-file-loader"
+import { loadSchemaSync } from "@graphql-tools/load"
+import { addResolversToSchema } from "@graphql-tools/schema"
+import { GRAPHQL_SCHEMA_PATH } from "./constants"
+
+const SCHEMA = loadSchemaSync(GRAPHQL_SCHEMA_PATH, {
+  loaders: [new GraphQLFileLoader()],
+})
 
 export async function createApolloServer(
   db: Db,
   httpServer: Server,
   app: express.Application
 ): Promise<ApolloServer<ExpressContext>> {
-  const typeDefs = gql`
-    type Query {
-      currentUser: User!
-      suggestions: [Suggestion!]!
-    }
-    type User {
-      id: String!
-      name: String!
-      handle: String!
-      coverUrl: String!
-      avatarUrl: String!
-      createdAt: String!
-      updatedAt: String!
-    }
-    type Suggestion {
-      name: String!
-      handle: String!
-      avatarUrl: String!
-      reason: String!
-    }
-  `;
 
   const resolvers = {
     Query: {
